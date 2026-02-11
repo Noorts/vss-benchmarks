@@ -1,0 +1,6 @@
+[submodule "vectordbbench"]
+	path = vectordbbench
+	url = https://github.com/noorts/vectordbbench
+[submodule "PDXearch"]
+	path = PDXearch
+	url = https://github.com/Noorts/PDXearch.git
