@@ -110,20 +110,14 @@ def run_vectordbbench(command: list[str], results_subdir: str | None = None):
 
 
 @dataclass
-class DuckDBConfig:
-    """Base configuration for DuckDB benchmarks via VectorDBBench CLI.
+class BaseVectorDBBenchConfig:
+    """Base configuration class for VectorDBBench CLI commands.
 
-    Fields correspond to CLI options shared across DuckDB commands.
-    Set any field to a *list* of values to sweep over that parameter;
-    ``expand()`` returns the cartesian product of all list-valued fields.
+    Provides common functionality for converting configurations to CLI arguments
+    and expanding list-valued fields into individual configs.
+
+    Subclasses must define a `cli_name` field.
     """
-
-    # -- VectorDBBench CLI subcommand name -------------------------------------
-    cli_name: str = "duckdb"
-
-    # -- Threads ---------------------------------------------------------------
-    duckdb_threads: int | list[int] | None = None
-    duckdb_threads_during_index_creation: int | list[int] | None = None
 
     # -- Common benchmark parameters -------------------------------------------
     case_type: str | None = None
@@ -137,8 +131,8 @@ class DuckDBConfig:
         self.db_label = json.dumps(self._build_db_label())
 
     def _build_db_label(self) -> dict:
-        """Return the db_label dict. Subclasses can extend this."""
-        return _base_db_label()
+        """Return the db_label dict. Subclasses must override this."""
+        raise NotImplementedError("Subclasses must implement _build_db_label")
 
     @property
     def task_label(self) -> str:
@@ -153,8 +147,9 @@ class DuckDBConfig:
         """Convert this configuration to a CLI argument list.
 
         Property names are transformed to CLI names by replacing underscores
-        with hyphens and prepending ``--`` (e.g. ``duckdb_threads`` becomes
-        ``--duckdb-threads``).  Properties that are ``None`` are omitted.
+        with hyphens and prepending ``--`` (e.g. ``user_name`` becomes
+        ``--user-name``).  Properties that are ``None`` are omitted.
+        Boolean values are handled specially for flags like reranking.
         """
         args: list[str] = []
         for f in fields(self):
@@ -164,10 +159,22 @@ class DuckDBConfig:
             if value is None:
                 continue
             cli_name = f"--{f.name.replace('_', '-')}"
-            args.extend([cli_name, str(value)])
+            # Handle boolean flags specially (for reranking: --reranking/--skip-reranking)
+            if isinstance(value, bool):
+                if f.name == "reranking":
+                    if value:
+                        args.append("--reranking")
+                    else:
+                        args.append("--skip-reranking")
+                else:
+                    # For other booleans, just use the flag name if True
+                    if value:
+                        args.append(cli_name)
+            else:
+                args.extend([cli_name, str(value)])
         return args
 
-    def expand(self) -> "list[DuckDBConfig]":
+    def expand(self) -> list:
         """Expand list-valued fields into individual configs (cartesian product)."""
         list_fields: list[str] = []
         list_values: list[list] = []
@@ -185,6 +192,27 @@ class DuckDBConfig:
                 kwargs[fname] = val
             configs.append(self.__class__(**kwargs))
         return configs
+
+
+@dataclass
+class DuckDBConfig(BaseVectorDBBenchConfig):
+    """Base configuration for DuckDB benchmarks via VectorDBBench CLI.
+
+    Fields correspond to CLI options shared across DuckDB commands.
+    Set any field to a *list* of values to sweep over that parameter;
+    ``expand()`` returns the cartesian product of all list-valued fields.
+    """
+
+    # -- VectorDBBench CLI subcommand name -------------------------------------
+    cli_name: str = "duckdb"
+
+    # -- Threads ---------------------------------------------------------------
+    duckdb_threads: int | list[int] | None = None
+    duckdb_threads_during_index_creation: int | list[int] | None = None
+
+    def _build_db_label(self) -> dict:
+        """Return the db_label dict. Subclasses can extend this."""
+        return _base_db_label()
 
 
 @dataclass
@@ -225,3 +253,69 @@ class DuckDBVSSConfig(DuckDBConfig):
 
     # -- Runtime parameters ----------------------------------------------------
     runtime_ef_search: int | list[int] | None = None
+
+
+@dataclass
+class PgVectorConfig(BaseVectorDBBenchConfig):
+    """Base configuration for PgVector benchmarks via VectorDBBench CLI.
+
+    Fields correspond to CLI options shared across PgVector commands.
+    Set any field to a *list* of values to sweep over that parameter;
+    ``expand()`` returns the cartesian product of all list-valued fields.
+    """
+
+    # -- VectorDBBench CLI subcommand name -------------------------------------
+    cli_name: str = "pgvector"
+
+    # -- Connection parameters -------------------------------------------------
+    user_name: str = "postgres"
+    password: str = field(
+        default_factory=lambda: os.environ.get("POSTGRES_PASSWORD", "postgres")
+    )
+    host: str = "localhost"
+    port: int = 5432
+    db_name: str = "vectordb"
+
+    # -- Index creation performance parameters ----------------------------------
+    maintenance_work_mem: str | list[str] | None = None
+    max_parallel_workers: int | list[int] | None = None
+
+    # -- Quantization parameters -----------------------------------------------
+    quantization_type: str | list[str] | None = None
+    table_quantization_type: str | list[str] | None = None
+
+    # -- Reranking parameters --------------------------------------------------
+    reranking: bool | list[bool] | None = None
+    reranking_metric: str | list[str] | None = None
+    quantized_fetch_limit: int | list[int] | None = None
+
+    def _build_db_label(self) -> dict:
+        """Return the db_label dict. Subclasses can extend this."""
+        label = {
+            "vectordbbench": get_git_commit_id(REPO_ROOT / "vectordbbench"),
+            "vss-benchmarks": get_git_commit_id(REPO_ROOT),
+        }
+        return label
+
+
+@dataclass
+class PgVectorHNSWConfig(PgVectorConfig):
+    """Configuration for PgVector HNSW benchmarks (``pgvectorhnsw`` command)."""
+
+    cli_name: str = "pgvectorhnsw"
+
+    # -- HNSW index creation parameters -----------------------------------------
+    m: int | list[int] | None = None
+    ef_construction: int | list[int] | None = None
+    ef_search: int | list[int] | None = None
+
+
+@dataclass
+class PgVectorIVFFlatConfig(PgVectorConfig):
+    """Configuration for PgVector IVFFlat benchmarks (``pgvectorivfflat`` command)."""
+
+    cli_name: str = "pgvectorivfflat"
+
+    # -- IVFFlat index creation parameters -------------------------------------
+    lists: int | list[int] | None = None
+    probes: int | list[int] | None = None

@@ -1,0 +1,66 @@
+import json
+import sys
+from dataclasses import asdict
+
+from tqdm import tqdm
+
+from utils import (
+    PgVectorHNSWConfig,
+    PgVectorIVFFlatConfig,
+    run_vectordbbench,
+)
+
+if __name__ == "__main__":
+
+    case_types = [
+        "Performance1024D769K",
+        "Performance1536D500K",
+        "Performance768D1M",
+        "Performance1536D999K",
+    ]
+
+    max_parallel_workers = [1, 14]
+    maintenance_work_mem = "16GB"
+
+    # PgVector HNSW configuration
+    hnsw_config = PgVectorHNSWConfig(
+        case_type=case_types,
+        max_parallel_workers=max_parallel_workers,
+        maintenance_work_mem=maintenance_work_mem,
+        # Same index parameters as VSS' HNSW.
+        m=16,
+        ef_construction=128,
+        ef_search=64,
+    )
+
+    # PgVector IVFFlat configuration
+    ivfflat_config = PgVectorIVFFlatConfig(
+        case_type=case_types,
+        max_parallel_workers=max_parallel_workers,
+        maintenance_work_mem=maintenance_work_mem,
+        # TODO: Ensure this matches PDXearch global?
+        # lists=1000,  # Typical starting point: rows / 1000 for up to 1M rows
+        # probes=32,  # Typical starting point: sqrt(lists)
+    )
+
+    flags = [
+        "--skip-search-serial",
+        "--skip-search-concurrent",
+    ]
+
+    configurations = hnsw_config.expand() + ivfflat_config.expand()
+    print(json.dumps([asdict(c) for c in configurations], indent=2))
+
+    for cfg in tqdm(configurations, desc="Running benchmarks"):
+        command = [
+            cfg.cli_name,
+            "--task-label",
+            cfg.task_label,
+            "--case-type",
+            cfg.case_type,
+            *flags,
+            *cfg.to_cli_args(),
+        ]
+        result = run_vectordbbench(command, "index_creation")
+        if result.returncode != 0:
+            print(result.stderr, file=sys.stderr)
