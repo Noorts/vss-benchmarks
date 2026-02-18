@@ -1,13 +1,13 @@
 {
-    "run_id": "089d663dd1694ed1969e277d7709ee1a",
-    "task_label": "duckdbpdxearch_Performance1536D999K_17-18-22",
+    "run_id": "612d81ae7f154e58ba704868c5a23be3",
+    "task_label": "duckdbpdxearch_Performance1536D999K_20-21-51",
     "results": [
         {
             "metrics": {
                 "max_load_count": 0,
-                "insert_duration": 110.6265,
-                "optimize_duration": 8.9536,
-                "load_duration": 119.58,
+                "insert_duration": 96.7129,
+                "optimize_duration": 14.1838,
+                "load_duration": 110.8967,
                 "serial_qps": 0.0,
                 "concurrent_qps": 0.0,
                 "serial_latency_p99": 0.0,
@@ -38,7 +38,7 @@
             "task_config": {
                 "db": "DuckDB",
                 "db_config": {
-                    "db_label": "{\"duckdb\": \"1.4.4\", \"vectordbbench\": \"37bf3b0\", \"vss-benchmarks\": \"a16d343\", \"pdxearch\": \"5f162f5\"}",
+                    "db_label": "{\"duckdb\": \"1.4.4\", \"vectordbbench\": \"37bf3b0\", \"vss-benchmarks\": \"81ffb2b\", \"pdxearch\": \"5f162f5\", \"global_version\": \"true\"}",
                     "version": "",
                     "note": "",
                     "database_name": "test.db",
