@@ -25,6 +25,7 @@ if __name__ == "__main__":
         case_type=case_types,
         duckdb_threads=duckdb_threads,
         seed=0,
+        quantization_type=["f32", "u8"],
     )
 
     vss_config = DuckDBVSSConfig(
