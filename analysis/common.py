@@ -2,7 +2,31 @@
 
 import re
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+
+# ---------------------------------------------------------------------------
+# Styling defaults
+# ---------------------------------------------------------------------------
+PLOT_DPI = 300
+
+LABEL_FONTSIZE = 14
+TICK_FONTSIZE = 12
+X_TICK_FONTSIZE = 12
+BAR_LABEL_FONTSIZE = 10
+TITLE_FONTSIZE = 15
+MARKER_SIZE = 60
+
+FONT_COLOR = "#333333"
+TICK_FONTS_COLOR = "#585858"
+BAR_TEXT_COLOR = "#191919"
+
+
+def apply_style() -> None:
+    """Apply shared matplotlib style settings."""
+    mpl.rcParams['hatch.linewidth'] = 0.2
+    mpl.rcParams['font.family'] = 'sans-serif'
+    mpl.rcParams['font.sans-serif'] = ['Helvetica', 'Arial', 'DejaVu Sans']
 
 # ---------------------------------------------------------------------------
 # Case ID → human-readable dataset name
