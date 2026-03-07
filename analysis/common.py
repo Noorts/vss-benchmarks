@@ -32,21 +32,52 @@ def apply_style() -> None:
 # Case ID → human-readable dataset name
 # ---------------------------------------------------------------------------
 CASE_NAMES: dict[int, str] = {
+    # Capacity tests
+    1:   "SIFT (500K × 128",
+    2:   "GIST (100K × 960",
+    # Cohere (768-dim)
+    3:   "LAION (100M × 768",
+    4:   "Cohere (10M × 768",
     5:   "Cohere (1M × 768",
+    6:   "Cohere (10M × 768",       # 1% filter
+    7:   "Cohere (1M × 768",        # 1% filter
+    8:   "Cohere (10M × 768",       # 99% filter
+    9:   "Cohere (1M × 768",        # 99% filter
+    # OpenAI (1536-dim)
     10:  "OpenAI (500K × 1536",
+    11:  "OpenAI (5M × 1536",
+    12:  "OpenAI (500K × 1536",     # 1% filter
+    13:  "OpenAI (5M × 1536",       # 1% filter
+    14:  "OpenAI (500K × 1536",     # 99% filter
+    15:  "OpenAI (5M × 1536",       # 99% filter
+    # Bioasq (1024-dim)
+    17:  "Bioasq (1M × 1024",
+    20:  "Bioasq (10M × 1024",
+    # OpenAI small
     50:  "OpenAI (50K × 1536",
+    # Custom Noorts datasets
     500: "OpenAI (999K × 1536",
     501: "Agnews (769K × 1024",
+    502: "ArxivForFanns (1.2M × 1024",
 }
 
 # ---------------------------------------------------------------------------
 # Dataset properties (exact embedding counts and dimensions)
 # ---------------------------------------------------------------------------
 DATASET_PROPS: dict[str, dict[str, int]] = {
-    "Cohere (1M × 768":   {"n": 1_000_000, "d": 768},
-    "OpenAI (500K × 1536": {"n": 500_000,   "d": 1536},
-    "OpenAI (999K × 1536": {"n": 999_000,   "d": 1536},
-    "Agnews (769K × 1024": {"n": 769_382,   "d": 1024},
+    "SIFT (500K × 128":              {"n": 500_000,       "d": 128},
+    "GIST (100K × 960":              {"n": 100_000,       "d": 960},
+    "LAION (100M × 768":             {"n": 100_000_000,   "d": 768},
+    "Cohere (1M × 768":              {"n": 1_000_000,     "d": 768},
+    "Cohere (10M × 768":             {"n": 10_000_000,    "d": 768},
+    "OpenAI (50K × 1536":            {"n": 50_000,        "d": 1536},
+    "OpenAI (500K × 1536":           {"n": 500_000,       "d": 1536},
+    "OpenAI (5M × 1536":             {"n": 5_000_000,     "d": 1536},
+    "OpenAI (999K × 1536":           {"n": 999_000,       "d": 1536},
+    "Bioasq (1M × 1024":             {"n": 1_000_000,     "d": 1024},
+    "Bioasq (10M × 1024":            {"n": 10_000_000,    "d": 1024},
+    "Agnews (769K × 1024":           {"n": 769_382,       "d": 1024},
+    "ArxivForFanns (1.2M × 1024":    {"n": 1_200_000,     "d": 1024},
 }
 
 # ---------------------------------------------------------------------------
