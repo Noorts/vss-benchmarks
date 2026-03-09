@@ -5,6 +5,7 @@ from dataclasses import asdict
 from tqdm import tqdm
 
 from utils import (
+    DuckDBConfig,
     DuckDBPDXearchConfig,
     DuckDBVSSConfig,
     run_vectordbbench,
@@ -13,25 +14,32 @@ from utils import (
 if __name__ == "__main__":
 
     case_types = [
+        "Performance1024D1200K",
         "Performance1024D769K",
         "Performance1536D500K",
         "Performance768D1M",
-        "Performance1536D999K",
+        "Performance128D4999K",
     ]
 
     duckdb_threads = [14]
 
     K = 10
 
+    plain_config = DuckDBConfig(
+        case_type=case_types,
+        duckdb_threads=duckdb_threads,
+    )
+
     # n_probe = [1, 2, 4, 8, 16, 28, 32, 64, 128, 256, 0]
     n_probe = list(range(0, 305, 16)) + [0]
 
-    config = DuckDBPDXearchConfig(
+    pdxearch_config = DuckDBPDXearchConfig(
         case_type=case_types,
         duckdb_threads=duckdb_threads,
         seed=0,
         k=K,
         runtime_n_probe=n_probe,
+        quantization_type=["f32", "u8"],
     )
 
     # ef_search = [64, 8, 16, 32, 96, 128, 192, 256]
@@ -48,7 +56,9 @@ if __name__ == "__main__":
         "--skip-search-concurrent",
     ]
 
-    configurations = config.expand() + vss_config.expand()
+    configurations = (
+        plain_config.expand() + pdxearch_config.expand() + vss_config.expand()
+    )
     print(json.dumps([asdict(c) for c in configurations], indent=2))
 
     # Track the database of the previous iteration such that we can skip data loading and index creation if it's ready.

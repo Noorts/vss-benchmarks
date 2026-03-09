@@ -13,10 +13,11 @@ from utils import (
 if __name__ == "__main__":
 
     case_types = [
+        "Performance1024D1200K",
         "Performance1024D769K",
         "Performance1536D500K",
         "Performance768D1M",
-        "Performance1536D999K",
+        "Performance128D4999K",
     ]
 
     K = 10
