@@ -108,6 +108,7 @@ def get_dataset_sort_key(dataset_name: str) -> tuple:
 # Index ordering, colors, hatches, and markers
 # ---------------------------------------------------------------------------
 INDEX_ORDER = [
+    "DuckDB",
     "VSS HNSW",
     "pgvector HNSW",
     "pgvector IVFFlat",
@@ -122,6 +123,7 @@ except (AttributeError, KeyError):
     _cmap = plt.cm.get_cmap('tab20')
 
 index_colors = {
+    "DuckDB":                            _cmap(16),
     "VSS HNSW":                          _cmap(14),
     "PDXearch SKM (IVF; Global; F32)":   _cmap(8),
     "PDXearch SKM (IVF; Row Group; F32)": _cmap(0),
@@ -131,6 +133,7 @@ index_colors = {
 }
 
 index_hatches = {
+    "DuckDB":                            "++",
     "VSS HNSW":                          "//",
     "PDXearch SKM (IVF; Global; F32)":   "\\\\",
     "PDXearch SKM (IVF; Row Group; F32)": "/\\/\\",
@@ -140,6 +143,7 @@ index_hatches = {
 }
 
 index_markers = {
+    "DuckDB":                            "X",
     "VSS HNSW":                          "s",
     "PDXearch SKM (IVF; Global; F32)":   "D",
     "PDXearch SKM (IVF; Row Group; F32)": "o",
@@ -154,7 +158,9 @@ index_markers = {
 def transform_duckdb_index_name(db_case_cfg: dict, global_version) -> str:
     """Transform a DuckDB index name from raw config to display name."""
     index_name = db_case_cfg["index"]
-    if index_name == "HNSW":
+    if index_name == "FLAT":
+        return "DuckDB"
+    elif index_name == "HNSW":
         return "VSS HNSW"
     elif index_name == "PDXEARCH" and global_version is not None:
         quant = db_case_cfg.get("index_quantization_type", "f32").upper()
