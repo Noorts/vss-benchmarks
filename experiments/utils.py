@@ -123,6 +123,7 @@ class BaseVectorDBBenchConfig:
     case_type: str | None = None
     k: int | list[int] | None = None
     max_search_queries: int | None = None
+    force_load_index: bool | None = None
     db_label: str = field(default="", init=False)
 
     # Fields excluded from CLI argument generation.

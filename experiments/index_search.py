@@ -25,6 +25,7 @@ if __name__ == "__main__":
 
     K = 10
     MAX_SEARCH_QUERIES = 1000
+    FORCE_LOAD_INDEX = True
 
     plain_config = DuckDBConfig(
         case_type=case_types,
@@ -41,6 +42,7 @@ if __name__ == "__main__":
         seed=0,
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
+        force_load_index=FORCE_LOAD_INDEX,
         runtime_n_probe=n_probe,
         quantization_type=["f32", "u8"],
     )
@@ -53,6 +55,7 @@ if __name__ == "__main__":
         duckdb_threads=duckdb_threads,
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
+        force_load_index=FORCE_LOAD_INDEX,
         runtime_ef_search=ef_search,
     )
 
