@@ -86,10 +86,10 @@ DATASET_PROPS: dict[str, dict[str, int]] = {
 # Dataset sorting
 # ---------------------------------------------------------------------------
 def get_dataset_sort_key(dataset_name: str) -> tuple:
-    """Sort datasets by dimensions first, then by number of embeddings."""
+    """Sort datasets by size in bytes first, then dims, then num_embeddings."""
     match = re.search(r"\((\d+(?:\.\d+)?)\s*([KM]?)\s*×\s*(\d+)", dataset_name)
     if not match:
-        return (float('inf'), float('inf'))
+        return (float('inf'), float('inf'), float('inf'))
 
     num_str, unit, dim_str = match.groups()
     dim = int(dim_str)
@@ -102,7 +102,9 @@ def get_dataset_sort_key(dataset_name: str) -> tuple:
     else:
         num_embeddings = int(num)
 
-    return (dim, num_embeddings)
+    size_bytes = num_embeddings * dim * 4
+
+    return (size_bytes, dim, num_embeddings)
 
 # ---------------------------------------------------------------------------
 # Index ordering, colors, hatches, and markers
