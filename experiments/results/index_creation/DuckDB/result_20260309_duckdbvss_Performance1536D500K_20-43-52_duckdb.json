@@ -1,0 +1,91 @@
+{
+    "run_id": "a67a4649c7324305b715716585133361",
+    "task_label": "duckdbvss_Performance1536D500K_20-43-52",
+    "results": [
+        {
+            "metrics": {
+                "max_load_count": 0,
+                "insert_duration": 46.1736,
+                "optimize_duration": 570.6595,
+                "load_duration": 616.8331,
+                "serial_qps": 0.0,
+                "concurrent_qps": 0.0,
+                "serial_latency_p99": 0.0,
+                "serial_latency_p95": 0.0,
+                "serial_latency_avg": 0.0,
+                "serial_latencies": [],
+                "recall": 0.0,
+                "ndcg": 0.0,
+                "conc_num_list": [],
+                "conc_qps_list": [],
+                "conc_latency_p99_list": [],
+                "conc_latency_p95_list": [],
+                "conc_latency_avg_list": [],
+                "st_ideal_insert_duration": 0,
+                "st_search_stage_list": [],
+                "st_search_time_list": [],
+                "st_max_qps_list_list": [],
+                "st_recall_list": [],
+                "st_ndcg_list": [],
+                "st_serial_latency_p99_list": [],
+                "st_serial_latency_p95_list": [],
+                "st_conc_failed_rate_list": [],
+                "st_conc_num_list_list": [],
+                "st_conc_qps_list_list": [],
+                "st_conc_latency_p99_list_list": [],
+                "st_conc_latency_p95_list_list": [],
+                "st_conc_latency_avg_list_list": []
+            },
+            "task_config": {
+                "db": "DuckDB",
+                "db_config": {
+                    "db_label": "{\"duckdb\": \"1.4.4\", \"vectordbbench\": \"de6c739\", \"vss-benchmarks\": \"032a00a\"}",
+                    "version": "",
+                    "note": "",
+                    "database_name": "test.db",
+                    "table_name": "test_table",
+                    "duckdb_threads": 1
+                },
+                "db_case_config": {
+                    "index": "HNSW",
+                    "create_index": "AFTER_INSERT",
+                    "metric_type": "COSINE",
+                    "index_name": "test_idx",
+                    "duckdb_threads_during_index_creation": null,
+                    "index_ef_construction": 128,
+                    "index_ef_search": 64,
+                    "index_M": 16,
+                    "index_M0": 32,
+                    "runtime_ef_search": null
+                },
+                "case_config": {
+                    "case_id": 10,
+                    "custom_case": {},
+                    "k": 100,
+                    "max_search_queries": null,
+                    "concurrency_search_config": {
+                        "num_concurrency": [
+                            1,
+                            5,
+                            10,
+                            20,
+                            30,
+                            40,
+                            60,
+                            80
+                        ],
+                        "concurrency_duration": 30,
+                        "concurrency_timeout": 3600
+                    }
+                },
+                "stages": [
+                    "drop_old",
+                    "load"
+                ]
+            },
+            "label": ":)"
+        }
+    ],
+    "file_fmt": "result_{}_{}_{}.json",
+    "timestamp": 1773010800.0
+}
