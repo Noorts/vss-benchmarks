@@ -270,13 +270,13 @@ class PgVectorConfig(BaseVectorDBBenchConfig):
     cli_name: str = "pgvector"
 
     # -- Connection parameters -------------------------------------------------
-    user_name: str = "user"
+    user_name: str = "postgres"
     password: str = field(
-        default_factory=lambda: os.environ.get("POSTGRES_PASSWORD", "password")
+        default_factory=lambda: os.environ.get("POSTGRES_PASSWORD", "postgres")
     )
     host: str = "localhost"
     port: int = 5432
-    db_name: str = "postgres"
+    db_name: str = "vectordb"
 
     # -- Index creation performance parameters ----------------------------------
     maintenance_work_mem: str | list[str] | None = None
