@@ -122,6 +122,7 @@ class BaseVectorDBBenchConfig:
     # -- Common benchmark parameters -------------------------------------------
     case_type: str | None = None
     k: int | list[int] | None = None
+    max_search_queries: int | None = None
     db_label: str = field(default="", init=False)
 
     # Fields excluded from CLI argument generation.

@@ -24,10 +24,12 @@ if __name__ == "__main__":
     duckdb_threads = [14]
 
     K = 10
+    MAX_SEARCH_QUERIES = 1000
 
     plain_config = DuckDBConfig(
         case_type=case_types,
         duckdb_threads=duckdb_threads,
+        max_search_queries=MAX_SEARCH_QUERIES,
     )
 
     # n_probe = [1, 2, 4, 8, 16, 28, 32, 64, 128, 256, 0]
@@ -38,6 +40,7 @@ if __name__ == "__main__":
         duckdb_threads=duckdb_threads,
         seed=0,
         k=K,
+        max_search_queries=MAX_SEARCH_QUERIES,
         runtime_n_probe=n_probe,
         quantization_type=["f32", "u8"],
     )
@@ -49,6 +52,7 @@ if __name__ == "__main__":
         case_type=case_types,
         duckdb_threads=duckdb_threads,
         k=K,
+        max_search_queries=MAX_SEARCH_QUERIES,
         runtime_ef_search=ef_search,
     )
 

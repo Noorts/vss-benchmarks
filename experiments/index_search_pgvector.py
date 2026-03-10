@@ -21,6 +21,7 @@ if __name__ == "__main__":
     ]
 
     K = 10
+    MAX_SEARCH_QUERIES = 1000
 
     max_parallel_workers = 14
     maintenance_work_mem = "16GB"
@@ -33,6 +34,7 @@ if __name__ == "__main__":
         case_type=case_types,
         max_parallel_workers=max_parallel_workers,
         maintenance_work_mem=maintenance_work_mem,
+        max_search_queries=MAX_SEARCH_QUERIES,
         # Same index parameters as DuckDB VSS' HNSW.
         m=16,
         ef_construction=128,
@@ -47,6 +49,7 @@ if __name__ == "__main__":
         case_type=case_types,
         max_parallel_workers=max_parallel_workers,
         maintenance_work_mem=maintenance_work_mem,
+        max_search_queries=MAX_SEARCH_QUERIES,
         # lists=100,  # Same as PDXearch global for 999K. Pgvector default is 100.
         probes=n_probe,  # Pgvector default is 1.
     )
