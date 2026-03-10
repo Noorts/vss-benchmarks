@@ -126,7 +126,7 @@ except (AttributeError, KeyError):
 
 index_colors = {
     "DuckDB":                            _cmap(16),
-    "VSS HNSW":                          _cmap(14),
+    "VSS HNSW":                          _cmap(15),
     "PDXearch SKM (IVF; Global; F32)":   _cmap(8),
     "PDXearch SKM (IVF; Row Group; F32)": _cmap(0),
     "PDXearch SKM (IVF; Row Group; U8)": _cmap(1),
