@@ -281,6 +281,7 @@ class PgVectorConfig(BaseVectorDBBenchConfig):
     # -- Index creation performance parameters ----------------------------------
     maintenance_work_mem: str | list[str] | None = None
     max_parallel_workers: int | list[int] | None = None
+    max_parallel_maintenance_workers: int | list[int] | None = None
 
     # -- Quantization parameters -----------------------------------------------
     quantization_type: str | list[str] | None = None

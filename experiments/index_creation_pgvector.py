@@ -22,13 +22,15 @@ if __name__ == "__main__":
         "Performance128D4999K",
     ]
 
-    max_parallel_workers = [1, 14]
+    max_parallel_workers = 14
+    max_parallel_maintenance_workers = 13  # plus leader
     maintenance_work_mem = "16GB"
 
     # PgVector HNSW configuration
     hnsw_config = PgVectorHNSWConfig(
         case_type=case_types,
         max_parallel_workers=max_parallel_workers,
+        max_parallel_maintenance_workers=max_parallel_maintenance_workers,
         maintenance_work_mem=maintenance_work_mem,
         # Same index parameters as VSS' HNSW.
         m=16,
@@ -40,6 +42,7 @@ if __name__ == "__main__":
     ivfflat_config = PgVectorIVFFlatConfig(
         case_type=case_types,
         max_parallel_workers=max_parallel_workers,
+        max_parallel_maintenance_workers=max_parallel_maintenance_workers,
         maintenance_work_mem=maintenance_work_mem,
         # TODO: Ensure this matches PDXearch global?
         # lists=1000,  # Typical starting point: rows / 1000 for up to 1M rows

@@ -25,6 +25,7 @@ if __name__ == "__main__":
     FORCE_LOAD_INDEX = True
 
     max_parallel_workers = 14
+    max_parallel_maintenance_workers = 13  # plus leader
     maintenance_work_mem = "16GB"
 
     # TODO: Figure out range that makes sense.
@@ -34,6 +35,7 @@ if __name__ == "__main__":
     hnsw_config = PgVectorHNSWConfig(
         case_type=case_types,
         max_parallel_workers=max_parallel_workers,
+        max_parallel_maintenance_workers=max_parallel_maintenance_workers,
         maintenance_work_mem=maintenance_work_mem,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
@@ -50,6 +52,7 @@ if __name__ == "__main__":
     ivfflat_config = PgVectorIVFFlatConfig(
         case_type=case_types,
         max_parallel_workers=max_parallel_workers,
+        max_parallel_maintenance_workers=max_parallel_maintenance_workers,
         maintenance_work_mem=maintenance_work_mem,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
