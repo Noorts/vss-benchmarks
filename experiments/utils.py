@@ -272,7 +272,7 @@ class PgVectorConfig(BaseVectorDBBenchConfig):
     # -- Connection parameters -------------------------------------------------
     user_name: str = "user"
     password: str = field(
-        default_factory=lambda: os.environ.get("POSTGRES_PASSWORD", "")
+        default_factory=lambda: os.environ.get("POSTGRES_PASSWORD", "password")
     )
     host: str = "localhost"
     port: int = 5432
