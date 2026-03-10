@@ -1,0 +1,101 @@
+{
+    "run_id": "0b1a3b08e20846c280f2c37b87fed494",
+    "task_label": "pgvectorhnsw_Performance1536D500K_16-05-02",
+    "results": [
+        {
+            "metrics": {
+                "max_load_count": 0,
+                "insert_duration": 0.0,
+                "optimize_duration": 0.0,
+                "load_duration": 0.0,
+                "serial_qps": 0.0,
+                "concurrent_qps": 0.0,
+                "serial_latency_p99": 0.0,
+                "serial_latency_p95": 0.0,
+                "serial_latency_avg": 0.0,
+                "serial_latencies": [],
+                "recall": 0.0,
+                "ndcg": 0.0,
+                "conc_num_list": [],
+                "conc_qps_list": [],
+                "conc_latency_p99_list": [],
+                "conc_latency_p95_list": [],
+                "conc_latency_avg_list": [],
+                "st_ideal_insert_duration": 0,
+                "st_search_stage_list": [],
+                "st_search_time_list": [],
+                "st_max_qps_list_list": [],
+                "st_recall_list": [],
+                "st_ndcg_list": [],
+                "st_serial_latency_p99_list": [],
+                "st_serial_latency_p95_list": [],
+                "st_conc_failed_rate_list": [],
+                "st_conc_num_list_list": [],
+                "st_conc_qps_list_list": [],
+                "st_conc_latency_p99_list_list": [],
+                "st_conc_latency_p95_list_list": [],
+                "st_conc_latency_avg_list_list": []
+            },
+            "task_config": {
+                "db": "PgVector",
+                "db_config": {
+                    "db_label": "{\"vectordbbench\": \"d4fd153\", \"vss-benchmarks\": \"3cae4d9\"}",
+                    "version": "",
+                    "note": "",
+                    "user_name": "**********",
+                    "password": "**********",
+                    "host": "localhost",
+                    "port": 5432,
+                    "db_name": "vectordb",
+                    "table_name": "vdbbench_table_test"
+                },
+                "db_case_config": {
+                    "metric_type": "COSINE",
+                    "create_index_before_load": false,
+                    "create_index_after_load": true,
+                    "iterative_scan": "relaxed_order",
+                    "m": 16,
+                    "ef_construction": 128,
+                    "ef_search": 64,
+                    "index": "hnsw",
+                    "maintenance_work_mem": "16GB",
+                    "max_parallel_workers": 14,
+                    "max_parallel_maintenance_workers": 13,
+                    "quantization_type": "vector",
+                    "table_quantization_type": "vector",
+                    "reranking": false,
+                    "quantized_fetch_limit": null,
+                    "reranking_metric": "COSINE"
+                },
+                "case_config": {
+                    "case_id": 10,
+                    "custom_case": {},
+                    "k": 100,
+                    "max_search_queries": null,
+                    "concurrency_search_config": {
+                        "num_concurrency": [
+                            1,
+                            5,
+                            10,
+                            20,
+                            30,
+                            40,
+                            60,
+                            80
+                        ],
+                        "concurrency_duration": 30,
+                        "concurrency_timeout": 3600
+                    }
+                },
+                "stages": [
+                    "drop_old",
+                    "load"
+                ],
+                "force_load_index": false
+            },
+            "label": "x"
+        }
+    ],
+    "file_fmt": "result_{}_{}_{}.json",
+    "timestamp": 1773097200.0
+}
