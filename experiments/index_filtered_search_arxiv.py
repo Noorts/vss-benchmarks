@@ -89,6 +89,6 @@ if __name__ == "__main__":
 
         previous_iteration_db = db_key
 
-        result = run_vectordbbench(command, "index_filtered_search")
+        result = run_vectordbbench(command, "index_filtered_search_arxiv")
         if result.returncode != 0:
             print(result.stderr, file=sys.stderr)
