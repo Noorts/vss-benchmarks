@@ -28,8 +28,7 @@ if __name__ == "__main__":
     max_parallel_maintenance_workers = 13  # plus leader
     maintenance_work_mem = "16GB"
 
-    # TODO: Figure out range that makes sense.
-    ef_search = list(range(0, 305, 16))
+    ef_search = [4, 8, 16, 32, 64, 128, 256, 512, 1024]
 
     # PgVector HNSW configuration
     hnsw_config = PgVectorHNSWConfig(
@@ -45,8 +44,7 @@ if __name__ == "__main__":
         ef_search=ef_search,
     )
 
-    # TODO: Figure out range that makes sense.
-    n_probe = [1] + list(range(10, 101, 10))
+    n_probe = [1, 2, 3, 4, 5, 8, 16, 32, 64, 128, 256, 384, 512, 768]
 
     # PgVector IVFFlat configuration
     # `lists` is resolved automatically from PGVECTOR_IVFFLAT_LISTS in utils.py

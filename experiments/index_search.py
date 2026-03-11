@@ -33,8 +33,7 @@ if __name__ == "__main__":
         max_search_queries=MAX_SEARCH_QUERIES,
     )
 
-    # n_probe = [1, 2, 4, 8, 16, 28, 32, 64, 128, 256, 0]
-    n_probe = list(range(0, 305, 16)) + [0]
+    n_probe = [1, 2, 3, 4, 5, 8, 16, 32, 64, 128, 256, 384, 512, 768, 0]
 
     pdxearch_config = DuckDBPDXearchConfig(
         case_type=case_types,
@@ -47,8 +46,7 @@ if __name__ == "__main__":
         quantization_type=["f32", "u8"],
     )
 
-    # ef_search = [64, 8, 16, 32, 96, 128, 192, 256]
-    ef_search = list(range(0, 305, 16))
+    ef_search = [4, 8, 16, 32, 64, 128, 256, 512, 1024]
 
     vss_config = DuckDBVSSConfig(
         case_type=case_types,
