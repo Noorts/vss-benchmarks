@@ -39,13 +39,12 @@ if __name__ == "__main__":
     )
 
     # PgVector IVFFlat configuration
+    # `lists` is resolved automatically from PGVECTOR_IVFFLAT_LISTS in utils.py
     ivfflat_config = PgVectorIVFFlatConfig(
         case_type=case_types,
         max_parallel_workers=max_parallel_workers,
         max_parallel_maintenance_workers=max_parallel_maintenance_workers,
         maintenance_work_mem=maintenance_work_mem,
-        # TODO: Ensure this matches PDXearch global?
-        # lists=1000,  # Typical starting point: rows / 1000 for up to 1M rows
         # probes=32,  # Typical starting point: sqrt(lists)
     )
 

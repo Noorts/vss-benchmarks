@@ -6,10 +6,33 @@ import sys
 import time
 from dataclasses import dataclass, field, fields
 from itertools import product
+from typing import ClassVar
 
 import duckdb
 
 REPO_ROOT = pathlib.Path(__file__).parent.parent
+
+# Mapping from (case_type, dataset_with_size_type) to IVFFlat `lists` parameter.
+# Use (case_type, None) when dataset_with_size_type is not set.
+PGVECTOR_IVFFLAT_LISTS: dict[tuple[str, str | None], int] = {
+    # -- Performance* (no dataset_with_size_type) ------------------------------
+    ("Performance128D4999K", None): 2236,
+    ("Performance1024D1200K", None): 1096,
+    ("Performance1024D769K", None): 770,
+    ("Performance1536D500K", None): 500,
+    ("Performance768D1M", None): 1000,
+    # -- ArxivFilterPerformanceCase --------------------------------------------
+    ("ArxivFilterPerformanceCase", None): 1096,  # for 1200K embeddings
+    # -- NewIntFilterPerformanceCase with dataset_with_size_type ----------------
+    (
+        "NewIntFilterPerformanceCase",
+        "Medium OpenAI (1536dim, 500K)",
+    ): 500,
+    (
+        "NewIntFilterPerformanceCase",
+        "Medium Cohere (768dim, 1M)",
+    ): 1000,
+}
 
 
 def get_duckdb_version() -> str:
@@ -125,9 +148,15 @@ class BaseVectorDBBenchConfig:
     max_search_queries: int | None = None
     force_load_index: bool | None = None
     db_label: str = field(default="", init=False)
+    dataset_with_size_type: str | None = None
+    filter_rate: float | None = None
+    arxiv_filter_type: str | None = None
 
     # Fields excluded from CLI argument generation.
-    _NON_CLI_FIELDS = {"cli_name", "case_type"}
+    _NON_CLI_FIELDS: ClassVar[set[str]] = {"cli_name", "case_type"}
+    # Fields excluded from the cartesian product in expand() because they are
+    # derived from other fields after expansion (e.g. lists in IVFFlat).
+    _DERIVED_FIELDS: ClassVar[set[str]] = set()
 
     def __post_init__(self):
         self.db_label = json.dumps(self._build_db_label())
@@ -177,23 +206,41 @@ class BaseVectorDBBenchConfig:
         return args
 
     def expand(self) -> list:
-        """Expand list-valued fields into individual configs (cartesian product)."""
+        """Expand list-valued fields into individual configs (cartesian product).
+
+        Fields listed in ``_DERIVED_FIELDS`` are excluded from the cartesian
+        product.  After expansion, ``_resolve_derived()`` is called on each
+        config so subclasses can populate those fields based on the expanded
+        values.
+        """
         list_fields: list[str] = []
         list_values: list[list] = []
         for f in fields(self):
+            if f.name in self._DERIVED_FIELDS:
+                continue
             value = getattr(self, f.name)
             if isinstance(value, list):
                 list_fields.append(f.name)
                 list_values.append(value)
         if not list_fields:
-            return [self]
+            cfg = self._resolve_derived()
+            return [cfg]
         configs = []
         for combo in product(*list_values):
             kwargs = {f.name: getattr(self, f.name) for f in fields(self) if f.init}
             for fname, val in zip(list_fields, combo):
                 kwargs[fname] = val
-            configs.append(self.__class__(**kwargs))
+            cfg = self.__class__(**kwargs)
+            cfg = cfg._resolve_derived()
+            configs.append(cfg)
         return configs
+
+    def _resolve_derived(self):
+        """Hook for subclasses to populate derived fields after expansion.
+
+        Returns self by default.
+        """
+        return self
 
 
 @dataclass
@@ -322,3 +369,19 @@ class PgVectorIVFFlatConfig(PgVectorConfig):
     # -- IVFFlat index creation parameters -------------------------------------
     lists: int | list[int] | None = None
     probes: int | list[int] | None = None
+
+    _DERIVED_FIELDS: ClassVar[set[str]] = {"lists"}
+
+    def _resolve_derived(self):
+        """Look up ``lists`` from ``PGVECTOR_IVFFLAT_LISTS`` when not explicitly set."""
+        if self.lists is not None:
+            return self
+        key = (self.case_type, self.dataset_with_size_type)
+        if key in PGVECTOR_IVFFLAT_LISTS:
+            self.lists = PGVECTOR_IVFFLAT_LISTS[key]
+        else:
+            raise ValueError(
+                f"No PGVECTOR_IVFFLAT_LISTS entry for {key}. "
+                "Add it to utils.py or set `lists` explicitly."
+            )
+        return self

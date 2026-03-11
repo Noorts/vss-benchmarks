@@ -49,6 +49,7 @@ if __name__ == "__main__":
     n_probe = [1] + list(range(10, 101, 10))
 
     # PgVector IVFFlat configuration
+    # `lists` is resolved automatically from PGVECTOR_IVFFLAT_LISTS in utils.py
     ivfflat_config = PgVectorIVFFlatConfig(
         case_type=case_types,
         max_parallel_workers=max_parallel_workers,
@@ -56,7 +57,6 @@ if __name__ == "__main__":
         maintenance_work_mem=maintenance_work_mem,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
-        # lists=100,  # Same as PDXearch global for 999K. Pgvector default is 100.
         probes=n_probe,  # Pgvector default is 1.
     )
 
