@@ -27,6 +27,7 @@ if __name__ == "__main__":
         duckdb_threads=duckdb_threads,
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
+        force_load_index=FORCE_LOAD_INDEX,
     )
 
     # 1096 lists in arxiv-for-fanns.

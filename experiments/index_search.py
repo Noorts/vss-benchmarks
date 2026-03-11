@@ -31,6 +31,7 @@ if __name__ == "__main__":
         case_type=case_types,
         duckdb_threads=duckdb_threads,
         max_search_queries=MAX_SEARCH_QUERIES,
+        force_load_index=FORCE_LOAD_INDEX,
     )
 
     n_probe = [1, 2, 3, 4, 5, 8, 16, 32, 64, 128, 256, 384, 512, 768, 0]
