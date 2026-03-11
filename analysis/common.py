@@ -111,12 +111,12 @@ def get_dataset_sort_key(dataset_name: str) -> tuple:
 # ---------------------------------------------------------------------------
 INDEX_ORDER = [
     "DuckDB",
-    "VSS HNSW",
-    "pgvector HNSW",
-    "pgvector IVFFlat",
-    "PDXearch SKM (IVF; Global; F32)",
-    "PDXearch SKM (IVF; Row Group; F32)",
-    "PDXearch SKM (IVF; Row Group; U8)",
+    "DuckDB VSS (HNSW)",
+    "pgvector (HNSW)",
+    "pgvector (IVFFlat)",
+    "DuckDB PDXearch (IVF; Global; F32)",
+    "DuckDB PDXearch (IVF; Row Group; F32)",
+    "DuckDB PDXearch (IVF; Row Group; U8)",
 ]
 
 try:
@@ -126,32 +126,32 @@ except (AttributeError, KeyError):
 
 index_colors = {
     "DuckDB":                            _cmap(16),
-    "VSS HNSW":                          _cmap(15),
-    "PDXearch SKM (IVF; Global; F32)":   _cmap(8),
-    "PDXearch SKM (IVF; Row Group; F32)": _cmap(0),
-    "PDXearch SKM (IVF; Row Group; U8)": _cmap(1),
-    "pgvector HNSW":                     _cmap(2),
-    "pgvector IVFFlat":                  _cmap(3),
+    "DuckDB VSS (HNSW)":                          _cmap(15),
+    "DuckDB PDXearch (IVF; Global; F32)":   _cmap(8),
+    "DuckDB PDXearch (IVF; Row Group; F32)": _cmap(0),
+    "DuckDB PDXearch (IVF; Row Group; U8)": _cmap(1),
+    "pgvector (HNSW)":                     _cmap(2),
+    "pgvector (IVFFlat)":                  _cmap(3),
 }
 
 index_hatches = {
     "DuckDB":                            "++",
-    "VSS HNSW":                          "//",
-    "PDXearch SKM (IVF; Global; F32)":   "\\\\",
-    "PDXearch SKM (IVF; Row Group; F32)": "/\\/\\",
-    "PDXearch SKM (IVF; Row Group; U8)": "xx",
-    "pgvector HNSW":                     "OO",
-    "pgvector IVFFlat":                  "..",
+    "DuckDB VSS (HNSW)":                          "//",
+    "DuckDB PDXearch (IVF; Global; F32)":   "\\\\",
+    "DuckDB PDXearch (IVF; Row Group; F32)": "/\\/\\",
+    "DuckDB PDXearch (IVF; Row Group; U8)": "xx",
+    "pgvector (HNSW)":                     "OO",
+    "pgvector (IVFFlat)":                  "..",
 }
 
 index_markers = {
     "DuckDB":                            "X",
-    "VSS HNSW":                          "s",
-    "PDXearch SKM (IVF; Global; F32)":   "D",
-    "PDXearch SKM (IVF; Row Group; F32)": "o",
-    "PDXearch SKM (IVF; Row Group; U8)": "P",
-    "pgvector HNSW":                     "^",
-    "pgvector IVFFlat":                  "v",
+    "DuckDB VSS (HNSW)":                          "s",
+    "DuckDB PDXearch (IVF; Global; F32)":   "D",
+    "DuckDB PDXearch (IVF; Row Group; F32)": "o",
+    "DuckDB PDXearch (IVF; Row Group; U8)": "P",
+    "pgvector (HNSW)":                     "^",
+    "pgvector (IVFFlat)":                  "v",
 }
 
 # ---------------------------------------------------------------------------
@@ -163,13 +163,13 @@ def transform_duckdb_index_name(db_case_cfg: dict, global_version) -> str:
     if index_name == "FLAT":
         return "DuckDB"
     elif index_name == "HNSW":
-        return "VSS HNSW"
+        return "DuckDB VSS (HNSW)"
     elif index_name == "PDXEARCH" and global_version is not None:
         quant = db_case_cfg.get("index_quantization_type", "f32").upper()
-        return f"PDXearch SKM (IVF; Global; {quant})"
+        return f"DuckDB PDXearch (IVF; Global; {quant})"
     elif index_name == "PDXEARCH":
         quant = db_case_cfg.get("index_quantization_type", "f32").upper()
-        return f"PDXearch SKM (IVF; Row Group; {quant})"
+        return f"DuckDB PDXearch (IVF; Row Group; {quant})"
     return index_name
 
 
@@ -177,9 +177,9 @@ def transform_pgvector_index_name(db_case_cfg: dict) -> str:
     """Transform a pgvector index name from raw config to display name."""
     index_name = db_case_cfg["index"]
     if index_name.lower() == "hnsw":
-        return "pgvector HNSW"
+        return "pgvector (HNSW)"
     elif index_name.lower() == "ivfflat":
-        return "pgvector IVFFlat"
+        return "pgvector (IVFFlat)"
     return index_name
 
 # ---------------------------------------------------------------------------
