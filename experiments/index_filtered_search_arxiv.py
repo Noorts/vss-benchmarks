@@ -81,7 +81,7 @@ if __name__ == "__main__":
             *cfg.to_cli_args(),
         ]
 
-        db_key = (cfg.cli_name, cfg.case_type)
+        db_key = (cfg.cli_name, cfg.case_type, cfg.arxiv_filter_type)
 
         if previous_iteration_db == db_key:
             command.extend(["--skip-drop-old", "--skip-load"])
