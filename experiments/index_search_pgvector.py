@@ -44,7 +44,7 @@ if __name__ == "__main__":
         ef_search=ef_search,
     )
 
-    n_probe = [1, 2, 3, 4, 5, 8, 16, 32, 64, 128, 256, 384, 512, 768]
+    n_probe = [1, 2, 3, 4, 5, 8, 16, 32, 64, 128]
 
     # PgVector IVFFlat configuration
     # `lists` is resolved automatically from PGVECTOR_IVFFLAT_LISTS in utils.py
