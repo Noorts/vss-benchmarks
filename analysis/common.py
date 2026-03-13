@@ -125,7 +125,7 @@ except (AttributeError, KeyError):
     _cmap = plt.cm.get_cmap('tab20')
 
 index_colors = {
-    "DuckDB":                            _cmap(16),
+    "DuckDB":                            _cmap(14),
     "DuckDB VSS (HNSW)":                          _cmap(15),
     "DuckDB PDXearch (IVF; Global; F32)":   _cmap(8),
     "DuckDB PDXearch (IVF; Row Group; F32)": _cmap(0),
