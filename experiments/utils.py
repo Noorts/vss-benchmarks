@@ -13,6 +13,16 @@ import duckdb
 REPO_ROOT = pathlib.Path(__file__).parent.parent
 
 # Mapping from (case_type, dataset_with_size_type) to IVFFlat `lists` parameter.
+# We use pgvector's recommended formula for determining the number of lists
+# based on the number of embeddings (https://github.com/pgvector/pgvector?tab=readme-ov-file#ivfflat).
+# See the pseudocode below.
+#
+# int get_num_lists(num_embeddings):
+#   if num_embeddings <= 1_000_000:
+#     return ceil(num_embeddings / 1_000)
+#   else:
+#     return ceil(sqrt(num_embeddings))
+#
 # Use (case_type, None) when dataset_with_size_type is not set.
 PGVECTOR_IVFFLAT_LISTS: dict[tuple[str, str | None], int] = {
     # -- Performance* (no dataset_with_size_type) ------------------------------
