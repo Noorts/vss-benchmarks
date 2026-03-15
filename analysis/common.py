@@ -206,9 +206,9 @@ def format_dataset_label(dataset_name: str) -> str:
     else:
         num_embeddings = int(num)
 
-    size_gb = (num_embeddings * dim * 4) / (1024 ** 3)
+    size_gb = (num_embeddings * dim * 4) / (1024**3)
 
-    return f"{name}\nn={n_label}, d={dim}\n{size_gb:.2f}GB"
+    return f"{name}\nn={n_label}, d={dim}\n{size_gb:.2f} GiB"
 
 
 def format_dataset_title(dataset_name: str) -> str:
@@ -216,6 +216,22 @@ def format_dataset_title(dataset_name: str) -> str:
     match = re.match(r"(.+?)\s*\((\d+(?:\.\d+)?)\s*([KM]?)\s*×\s*(\d+)", dataset_name)
     if not match:
         return dataset_name.split("(")[0].strip()
+
     name, num_str, unit, dim_str = match.groups()
-    n_label = f"{num_str}{unit}" if unit else num_str
-    return f"{name.strip()} (n={n_label}, d={dim_str})"
+    name = name.strip()
+    dim = int(dim_str)
+
+    n_label = f"{num_str}{unit}" if unit else f"{num_str}"
+
+    # Compute raw F32 data size in GB
+    num = float(num_str)
+    if unit == "K":
+        num_embeddings = int(num * 1000)
+    elif unit == "M":
+        num_embeddings = int(num * 1_000_000)
+    else:
+        num_embeddings = int(num)
+
+    size_gb = (num_embeddings * dim * 4) / (1024**3)
+
+    return f"{name}\n(n={n_label}, d={dim}, {size_gb:.2f} GiB)"
