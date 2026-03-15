@@ -24,37 +24,38 @@ BAR_TEXT_COLOR = "#191919"
 
 def apply_style() -> None:
     """Apply shared matplotlib style settings."""
-    mpl.rcParams['hatch.linewidth'] = 0.2
-    mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.sans-serif'] = ['Helvetica', 'Arial', 'DejaVu Sans']
+    mpl.rcParams["hatch.linewidth"] = 0.2
+    mpl.rcParams["font.family"] = "sans-serif"
+    mpl.rcParams["font.sans-serif"] = ["Helvetica", "Arial", "DejaVu Sans"]
+
 
 # ---------------------------------------------------------------------------
 # Case ID → human-readable dataset name
 # ---------------------------------------------------------------------------
 CASE_NAMES: dict[int, str] = {
     # Capacity tests
-    1:   "SIFT (500K × 128)",
-    2:   "GIST (100K × 960)",
+    1: "SIFT (500K × 128)",
+    2: "GIST (100K × 960)",
     # Cohere (768-dim)
-    3:   "LAION (100M × 768)",
-    4:   "Cohere (10M × 768)",
-    5:   "Cohere (1M × 768)",
-    6:   "Cohere (10M × 768)",       # 1% filter
-    7:   "Cohere (1M × 768)",        # 1% filter
-    8:   "Cohere (10M × 768)",       # 99% filter
-    9:   "Cohere (1M × 768)",        # 99% filter
+    3: "LAION (100M × 768)",
+    4: "Cohere (10M × 768)",
+    5: "Cohere (1M × 768)",
+    6: "Cohere (10M × 768)",  # 1% filter
+    7: "Cohere (1M × 768)",  # 1% filter
+    8: "Cohere (10M × 768)",  # 99% filter
+    9: "Cohere (1M × 768)",  # 99% filter
     # OpenAI (1536-dim)
-    10:  "OpenAI (500K × 1536)",
-    11:  "OpenAI (5M × 1536)",
-    12:  "OpenAI (500K × 1536)",     # 1% filter
-    13:  "OpenAI (5M × 1536)",       # 1% filter
-    14:  "OpenAI (500K × 1536)",     # 99% filter
-    15:  "OpenAI (5M × 1536)",       # 99% filter
+    10: "OpenAI (500K × 1536)",
+    11: "OpenAI (5M × 1536)",
+    12: "OpenAI (500K × 1536)",  # 1% filter
+    13: "OpenAI (5M × 1536)",  # 1% filter
+    14: "OpenAI (500K × 1536)",  # 99% filter
+    15: "OpenAI (5M × 1536)",  # 99% filter
     # Bioasq (1024-dim)
-    17:  "Bioasq (1M × 1024)",
-    20:  "Bioasq (10M × 1024)",
+    17: "Bioasq (1M × 1024)",
+    20: "Bioasq (10M × 1024)",
     # OpenAI small
-    50:  "OpenAI (50K × 1536)",
+    50: "OpenAI (50K × 1536)",
     # Custom Noorts datasets
     500: "OpenAI (999K × 1536)",
     501: "Agnews (769K × 1024)",
@@ -66,21 +67,22 @@ CASE_NAMES: dict[int, str] = {
 # Dataset properties (exact embedding counts and dimensions)
 # ---------------------------------------------------------------------------
 DATASET_PROPS: dict[str, dict[str, int]] = {
-    "SIFT (500K × 128)":              {"n": 500_000,       "d": 128},
-    "GIST (100K × 960)":              {"n": 100_000,       "d": 960},
-    "LAION (100M × 768)":             {"n": 100_000_000,   "d": 768},
-    "Cohere (1M × 768)":              {"n": 1_000_000,     "d": 768},
-    "Cohere (10M × 768)":             {"n": 10_000_000,    "d": 768},
-    "OpenAI (50K × 1536)":            {"n": 50_000,        "d": 1536},
-    "OpenAI (500K × 1536)":           {"n": 500_000,       "d": 1536},
-    "OpenAI (5M × 1536)":             {"n": 5_000_000,     "d": 1536},
-    "OpenAI (999K × 1536)":           {"n": 999_000,       "d": 1536},
-    "Bioasq (1M × 1024)":             {"n": 1_000_000,     "d": 1024},
-    "Bioasq (10M × 1024)":            {"n": 10_000_000,    "d": 1024},
-    "Agnews (769K × 1024)":           {"n": 769_382,       "d": 1024},
-    "ArxivForFanns (1.2M × 1024)":    {"n": 1_200_000,     "d": 1024},
-    "SIFT (4999K × 128)":             {"n": 4_999_000,     "d": 128},
+    "SIFT (500K × 128)": {"n": 500_000, "d": 128},
+    "GIST (100K × 960)": {"n": 100_000, "d": 960},
+    "LAION (100M × 768)": {"n": 100_000_000, "d": 768},
+    "Cohere (1M × 768)": {"n": 1_000_000, "d": 768},
+    "Cohere (10M × 768)": {"n": 10_000_000, "d": 768},
+    "OpenAI (50K × 1536)": {"n": 50_000, "d": 1536},
+    "OpenAI (500K × 1536)": {"n": 500_000, "d": 1536},
+    "OpenAI (5M × 1536)": {"n": 5_000_000, "d": 1536},
+    "OpenAI (999K × 1536)": {"n": 999_000, "d": 1536},
+    "Bioasq (1M × 1024)": {"n": 1_000_000, "d": 1024},
+    "Bioasq (10M × 1024)": {"n": 10_000_000, "d": 1024},
+    "Agnews (769K × 1024)": {"n": 769_382, "d": 1024},
+    "ArxivForFanns (1.2M × 1024)": {"n": 1_200_000, "d": 1024},
+    "SIFT (4999K × 128)": {"n": 4_999_000, "d": 128},
 }
+
 
 # ---------------------------------------------------------------------------
 # Dataset sorting
@@ -89,7 +91,7 @@ def get_dataset_sort_key(dataset_name: str) -> tuple:
     """Sort datasets by size in bytes first, then dims, then num_embeddings."""
     match = re.search(r"\((\d+(?:\.\d+)?)\s*([KM]?)\s*×\s*(\d+)", dataset_name)
     if not match:
-        return (float('inf'), float('inf'), float('inf'))
+        return (float("inf"), float("inf"), float("inf"))
 
     num_str, unit, dim_str = match.groups()
     dim = int(dim_str)
@@ -106,6 +108,7 @@ def get_dataset_sort_key(dataset_name: str) -> tuple:
 
     return (size_bytes, dim, num_embeddings)
 
+
 # ---------------------------------------------------------------------------
 # Index ordering, colors, hatches, and markers
 # ---------------------------------------------------------------------------
@@ -120,39 +123,40 @@ INDEX_ORDER = [
 ]
 
 try:
-    _cmap = plt.colormaps['tab20']
+    _cmap = plt.colormaps["tab20"]
 except (AttributeError, KeyError):
-    _cmap = plt.cm.get_cmap('tab20')
+    _cmap = plt.cm.get_cmap("tab20")
 
 index_colors = {
-    "DuckDB":                            _cmap(14),
-    "DuckDB VSS (HNSW)":                          _cmap(15),
-    "DuckDB PDXearch (IVF; Global; F32)":   _cmap(8),
+    "DuckDB": _cmap(14),
+    "DuckDB VSS (HNSW)": _cmap(15),
+    "DuckDB PDXearch (IVF; Global; F32)": _cmap(8),
     "DuckDB PDXearch (IVF; Row Group; F32)": _cmap(0),
     "DuckDB PDXearch (IVF; Row Group; U8)": _cmap(1),
-    "pgvector (HNSW)":                     _cmap(2),
-    "pgvector (IVFFlat)":                  _cmap(3),
+    "pgvector (HNSW)": _cmap(2),
+    "pgvector (IVFFlat)": _cmap(3),
 }
 
 index_hatches = {
-    "DuckDB":                            "++",
-    "DuckDB VSS (HNSW)":                          "//",
-    "DuckDB PDXearch (IVF; Global; F32)":   "\\\\",
+    "DuckDB": "++",
+    "DuckDB VSS (HNSW)": "//",
+    "DuckDB PDXearch (IVF; Global; F32)": "\\\\",
     "DuckDB PDXearch (IVF; Row Group; F32)": "/\\/\\",
     "DuckDB PDXearch (IVF; Row Group; U8)": "xx",
-    "pgvector (HNSW)":                     "OO",
-    "pgvector (IVFFlat)":                  "..",
+    "pgvector (HNSW)": "OO",
+    "pgvector (IVFFlat)": "..",
 }
 
 index_markers = {
-    "DuckDB":                            "X",
-    "DuckDB VSS (HNSW)":                          "s",
-    "DuckDB PDXearch (IVF; Global; F32)":   "D",
+    "DuckDB": "X",
+    "DuckDB VSS (HNSW)": "s",
+    "DuckDB PDXearch (IVF; Global; F32)": "D",
     "DuckDB PDXearch (IVF; Row Group; F32)": "o",
     "DuckDB PDXearch (IVF; Row Group; U8)": "P",
-    "pgvector (HNSW)":                     "^",
-    "pgvector (IVFFlat)":                  "v",
+    "pgvector (HNSW)": "^",
+    "pgvector (IVFFlat)": "v",
 }
+
 
 # ---------------------------------------------------------------------------
 # Index name transformation (from raw JSON to display name)
@@ -181,6 +185,7 @@ def transform_pgvector_index_name(db_case_cfg: dict) -> str:
     elif index_name.lower() == "ivfflat":
         return "pgvector (IVFFlat)"
     return index_name
+
 
 # ---------------------------------------------------------------------------
 # Dataset label formatting
