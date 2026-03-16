@@ -20,6 +20,7 @@ if __name__ == "__main__":
     K = 10
     MAX_SEARCH_QUERIES = 1000
     FORCE_LOAD_INDEX = True
+    SORTED_BY_UPDATE_DATE = False  # Set to True to use the update_date-sorted variant of the Arxiv dataset.
 
     plain_config = DuckDBConfig(
         case_type=case_types,
@@ -28,6 +29,7 @@ if __name__ == "__main__":
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
+        sorted_by_update_date=SORTED_BY_UPDATE_DATE,
     )
 
     # 1096 lists in arxiv-for-fanns.
@@ -41,6 +43,7 @@ if __name__ == "__main__":
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
+        sorted_by_update_date=SORTED_BY_UPDATE_DATE,
         runtime_n_probe=n_probe,
         quantization_type="f32",
     )
@@ -54,6 +57,7 @@ if __name__ == "__main__":
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
+        sorted_by_update_date=SORTED_BY_UPDATE_DATE,
         runtime_ef_search=ef_search,
     )
 
@@ -82,7 +86,7 @@ if __name__ == "__main__":
             *cfg.to_cli_args(),
         ]
 
-        db_key = (cfg.cli_name, cfg.case_type, cfg.arxiv_filter_type)
+        db_key = (cfg.cli_name, cfg.case_type, cfg.arxiv_filter_type, cfg.sorted_by_update_date)
 
         if previous_iteration_db == db_key:
             command.extend(["--skip-drop-old", "--skip-load"])

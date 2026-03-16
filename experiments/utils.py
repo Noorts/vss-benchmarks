@@ -161,6 +161,7 @@ class BaseVectorDBBenchConfig:
     dataset_with_size_type: str | None = None
     filter_rate: float | None = None
     arxiv_filter_type: str | None = None
+    sorted_by_update_date: bool | None = None
 
     # Fields excluded from CLI argument generation.
     _NON_CLI_FIELDS: ClassVar[set[str]] = {"cli_name", "case_type"}
@@ -200,13 +201,12 @@ class BaseVectorDBBenchConfig:
             if value is None:
                 continue
             cli_name = f"--{f.name.replace('_', '-')}"
-            # Handle boolean flags specially (for reranking: --reranking/--skip-reranking)
+            # Handle boolean flags specially.
             if isinstance(value, bool):
                 if f.name == "reranking":
-                    if value:
-                        args.append("--reranking")
-                    else:
-                        args.append("--skip-reranking")
+                    args.append("--reranking" if value else "--skip-reranking")
+                elif f.name == "sorted_by_update_date":
+                    args.append("--sorted-by-update-date" if value else "--no-sorted-by-update-date")
                 else:
                     # For other booleans, just use the flag name if True
                     if value:
