@@ -161,7 +161,7 @@ class BaseVectorDBBenchConfig:
     dataset_with_size_type: str | None = None
     filter_rate: float | None = None
     arxiv_filter_type: str | None = None
-    sorted_by_update_date: bool | None = None
+    arxiv_dataset_order: str | None = None  # "original", "sorted_by_update_date", or "randomly_shuffled"
 
     # Fields excluded from CLI argument generation.
     _NON_CLI_FIELDS: ClassVar[set[str]] = {"cli_name", "case_type"}
@@ -205,8 +205,6 @@ class BaseVectorDBBenchConfig:
             if isinstance(value, bool):
                 if f.name == "reranking":
                     args.append("--reranking" if value else "--skip-reranking")
-                elif f.name == "sorted_by_update_date":
-                    args.append("--sorted-by-update-date" if value else "--no-sorted-by-update-date")
                 else:
                     # For other booleans, just use the flag name if True
                     if value:
