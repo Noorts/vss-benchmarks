@@ -208,7 +208,9 @@ class BaseVectorDBBenchConfig:
                 if f.name == "reranking":
                     args.append("--reranking" if value else "--skip-reranking")
                 elif f.name == "use_blob_interface":
-                    args.append("--use-blob-interface" if value else "--no-use-blob-interface")
+                    args.append(
+                        "--use-blob-interface" if value else "--no-use-blob-interface"
+                    )
                 else:
                     # For other booleans, just use the flag name if True
                     if value:
