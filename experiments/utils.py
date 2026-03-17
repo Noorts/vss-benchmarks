@@ -8,8 +8,6 @@ from dataclasses import dataclass, field, fields
 from itertools import product
 from typing import ClassVar
 
-import duckdb
-
 REPO_ROOT = pathlib.Path(__file__).parent.parent
 
 # Mapping from (case_type, dataset_with_size_type) to IVFFlat `lists` parameter.
@@ -46,8 +44,18 @@ PGVECTOR_IVFFLAT_LISTS: dict[tuple[str, str | None], int] = {
 
 
 def get_duckdb_version() -> str:
-    """Return the version string of the duckdb Python package in the environment."""
-    return duckdb.__version__
+    """Return the DuckDB version pinned in VectorDBBench's pyproject.toml."""
+    import re
+    import tomllib
+
+    pyproject_path = REPO_ROOT / "vectordbbench" / "pyproject.toml"
+    with open(pyproject_path, "rb") as f:
+        pyproject = tomllib.load(f)
+    for dep in pyproject["project"]["optional-dependencies"]["duckdb"]:
+        m = re.match(r"duckdb==(.+)", dep)
+        if m:
+            return m.group(1)
+    raise ValueError("Could not find pinned duckdb version in vectordbbench/pyproject.toml")
 
 
 def get_git_commit_id(repo_path: str | pathlib.Path) -> str:
