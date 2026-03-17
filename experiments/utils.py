@@ -161,7 +161,9 @@ class BaseVectorDBBenchConfig:
     dataset_with_size_type: str | None = None
     filter_rate: float | None = None
     arxiv_filter_type: str | None = None
-    arxiv_dataset_order: str | None = None  # "original", "sorted_by_update_date", or "randomly_shuffled"
+    arxiv_dataset_order: str | None = (
+        None  # "original", "sorted_by_update_date", or "randomly_shuffled"
+    )
 
     # Fields excluded from CLI argument generation.
     _NON_CLI_FIELDS: ClassVar[set[str]] = {"cli_name", "case_type"}
@@ -205,6 +207,8 @@ class BaseVectorDBBenchConfig:
             if isinstance(value, bool):
                 if f.name == "reranking":
                     args.append("--reranking" if value else "--skip-reranking")
+                elif f.name == "use_blob_interface":
+                    args.append("--use-blob-interface" if value else "--no-use-blob-interface")
                 else:
                     # For other booleans, just use the flag name if True
                     if value:
@@ -262,6 +266,9 @@ class DuckDBConfig(BaseVectorDBBenchConfig):
 
     # -- VectorDBBench CLI subcommand name -------------------------------------
     cli_name: str = "duckdb"
+
+    # -- Query interface -------------------------------------------------------
+    use_blob_interface: bool | None = None
 
     # -- Threads ---------------------------------------------------------------
     duckdb_threads: int | list[int] | None = None

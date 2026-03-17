@@ -20,6 +20,7 @@ if __name__ == "__main__":
     K = 10
     MAX_SEARCH_QUERIES = 1000
     FORCE_LOAD_INDEX = True
+    USE_BLOB_INTERFACE = True
     # Row ordering variant: "original", "sorted_by_update_date", or "randomly_shuffled"
     ARXIV_DATASET_ORDER = "sorted_by_update_date"
 
@@ -30,6 +31,7 @@ if __name__ == "__main__":
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
+        use_blob_interface=USE_BLOB_INTERFACE,
         arxiv_dataset_order=ARXIV_DATASET_ORDER,
     )
 
@@ -44,6 +46,7 @@ if __name__ == "__main__":
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
+        use_blob_interface=USE_BLOB_INTERFACE,
         arxiv_dataset_order=ARXIV_DATASET_ORDER,
         runtime_n_probe=n_probe,
         quantization_type="f32",
@@ -61,6 +64,7 @@ if __name__ == "__main__":
         arxiv_dataset_order=ARXIV_DATASET_ORDER,
         runtime_ef_search=ef_search,
     )
+    # Note: VSS does not support the blob interface yet; leave use_blob_interface unset (None).
 
     flags = [
         "--skip-search-concurrent",

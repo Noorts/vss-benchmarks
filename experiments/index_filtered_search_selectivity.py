@@ -42,6 +42,7 @@ if __name__ == "__main__":
     K = 10
     MAX_SEARCH_QUERIES = 1000
     FORCE_LOAD_INDEX = True
+    USE_BLOB_INTERFACE = True
 
     plain_config = DuckDBConfig(
         case_type="NewIntFilterPerformanceCase",
@@ -51,6 +52,7 @@ if __name__ == "__main__":
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
+        use_blob_interface=USE_BLOB_INTERFACE,
     )
 
     n_probe = [1, 2, 3, 4, 5, 8, 16, 32, 64, 128, 256, 384, 512, 768, 0]
@@ -64,6 +66,7 @@ if __name__ == "__main__":
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
+        use_blob_interface=USE_BLOB_INTERFACE,
         runtime_n_probe=n_probe,
         quantization_type=["f32", "u8"],
     )
@@ -80,6 +83,7 @@ if __name__ == "__main__":
         force_load_index=FORCE_LOAD_INDEX,
         runtime_ef_search=ef_search,
     )
+    # Note: VSS does not support the blob interface; leave use_blob_interface unset (None).
 
     flags = [
         "--skip-search-concurrent",
