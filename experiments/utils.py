@@ -55,7 +55,9 @@ def get_duckdb_version() -> str:
         m = re.match(r"duckdb==(.+)", dep)
         if m:
             return m.group(1)
-    raise ValueError("Could not find pinned duckdb version in vectordbbench/pyproject.toml")
+    raise ValueError(
+        "Could not find pinned duckdb version in vectordbbench/pyproject.toml"
+    )
 
 
 def get_git_commit_id(repo_path: str | pathlib.Path) -> str:
@@ -98,6 +100,30 @@ def get_pdxearch_extension_path() -> str:
         raise FileNotFoundError(
             f"PDXearch extension not found at {resolved_path}. "
             "Please build the extension first by running the build process in the PDXearch submodule."
+        )
+    return str(resolved_path)
+
+
+def get_vss_extension_path() -> str:
+    """Return the full path to the locally built VSS DuckDB extension.
+
+    Raises:
+        FileNotFoundError: If the extension file does not exist.
+    """
+    extension_path = (
+        REPO_ROOT
+        / "duckdb-vss"
+        / "build"
+        / "release"
+        / "extension"
+        / "vss"
+        / "vss.duckdb_extension"
+    )
+    resolved_path = extension_path.resolve()
+    if not resolved_path.exists():
+        raise FileNotFoundError(
+            f"VSS extension not found at {resolved_path}. "
+            "Please build the extension first."
         )
     return str(resolved_path)
 
@@ -319,6 +345,11 @@ class DuckDBVSSConfig(DuckDBConfig):
 
     cli_name: str = "duckdbvss"
 
+    # -- Connection / extension ------------------------------------------------
+    # Default: use the locally built extension (like PDXearch).
+    # Set to None to install and load the official VSS extension instead.
+    extension_path: str | None = field(default_factory=get_vss_extension_path)
+
     # -- Index creation parameters ---------------------------------------------
     ef_construction: int | list[int] | None = None
     ef_search: int | list[int] | None = None
@@ -327,6 +358,23 @@ class DuckDBVSSConfig(DuckDBConfig):
 
     # -- Runtime parameters ----------------------------------------------------
     runtime_ef_search: int | list[int] | None = None
+
+    def __post_init__(self):
+        if self.use_blob_interface and not self.extension_path:
+            raise ValueError(
+                "DuckDBVSSConfig: use_blob_interface=True requires extension_path to be set. "
+                "The blob functions (vss_encode_blob, etc.) are currently only available in the custom-built VSS extension."
+            )
+        super().__post_init__()
+
+    def _build_db_label(self) -> dict:
+        label = super()._build_db_label()
+        if self.extension_path:
+            try:
+                label["vss"] = get_git_commit_id(REPO_ROOT / "duckdb-vss")
+            except Exception:
+                pass
+        return label
 
 
 @dataclass

@@ -7,6 +7,7 @@ from tqdm import tqdm
 from utils import (
     DuckDBPDXearchConfig,
     DuckDBVSSConfig,
+    get_vss_extension_path,
     run_vectordbbench,
 )
 
@@ -23,6 +24,7 @@ if __name__ == "__main__":
     ]
 
     duckdb_threads = [1, 14]
+    USE_CUSTOM_VSS_BUILD = False  # False = install and load the official VSS extension
 
     pdxearch_config = DuckDBPDXearchConfig(
         case_type=case_types,
@@ -34,6 +36,7 @@ if __name__ == "__main__":
     vss_config = DuckDBVSSConfig(
         case_type=case_types,
         duckdb_threads=duckdb_threads,
+        extension_path=get_vss_extension_path() if USE_CUSTOM_VSS_BUILD else None,
     )
 
     flags = [

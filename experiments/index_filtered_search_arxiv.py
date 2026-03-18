@@ -8,6 +8,7 @@ from utils import (
     DuckDBConfig,
     DuckDBPDXearchConfig,
     DuckDBVSSConfig,
+    get_vss_extension_path,
     run_vectordbbench,
 )
 
@@ -21,6 +22,7 @@ if __name__ == "__main__":
     MAX_SEARCH_QUERIES = 1000
     FORCE_LOAD_INDEX = True
     USE_BLOB_INTERFACE = True
+    USE_CUSTOM_VSS_BUILD = True  # False = install and load the official VSS extension
     # Row ordering variant: "original", "sorted_by_update_date", or "randomly_shuffled"
     ARXIV_DATASET_ORDER = "sorted_by_update_date"
 
@@ -62,9 +64,10 @@ if __name__ == "__main__":
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
         arxiv_dataset_order=ARXIV_DATASET_ORDER,
+        use_blob_interface=USE_BLOB_INTERFACE,
+        extension_path=get_vss_extension_path() if USE_CUSTOM_VSS_BUILD else None,
         runtime_ef_search=ef_search,
     )
-    # Note: VSS does not support the blob interface yet; leave use_blob_interface unset (None).
 
     flags = [
         "--skip-search-concurrent",
