@@ -119,6 +119,7 @@ if __name__ == "__main__":
 
         previous_iteration_db = db_key
 
-        result = run_vectordbbench(command, "index_filtered_search_selectivity")
+        results_subdir = "index_filtered_search_selectivity_blob" if getattr(cfg, "use_blob_interface", None) else "index_filtered_search_selectivity"
+        result = run_vectordbbench(command, results_subdir)
         if result.returncode != 0:
             print(result.stderr, file=sys.stderr)
