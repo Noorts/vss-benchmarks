@@ -16,7 +16,8 @@ if __name__ == "__main__":
     case_types = ["ArxivFilterPerformanceCase"]
     arxiv_filter_types = ["EM", "R", "EMIS"]
 
-    duckdb_threads = [14]
+    duckdb_threads = [1, 14]
+    duckdb_threads_during_index_creation = [14]
 
     K = 10
     MAX_SEARCH_QUERIES = 1000
@@ -30,6 +31,7 @@ if __name__ == "__main__":
         case_type=case_types,
         arxiv_filter_type=arxiv_filter_types,
         duckdb_threads=duckdb_threads,
+        duckdb_threads_during_index_creation=duckdb_threads_during_index_creation,
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
@@ -44,6 +46,7 @@ if __name__ == "__main__":
         case_type=case_types,
         arxiv_filter_type=arxiv_filter_types,
         duckdb_threads=duckdb_threads,
+        duckdb_threads_during_index_creation=duckdb_threads_during_index_creation,
         seed=0,
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
@@ -60,6 +63,7 @@ if __name__ == "__main__":
         case_type=case_types,
         arxiv_filter_type=arxiv_filter_types,
         duckdb_threads=duckdb_threads,
+        duckdb_threads_during_index_creation=duckdb_threads_during_index_creation,
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
