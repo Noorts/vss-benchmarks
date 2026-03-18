@@ -4,3 +4,7 @@
 [submodule "PDXearch"]
 	path = PDXearch
 	url = https://github.com/Noorts/PDXearch.git
+[submodule "duckdb-vss"]
+	path = duckdb-vss
+	url = https://github.com/Noorts/duckdb-vss.git
+	branch = feature/v1.4-andium-blob-interface
