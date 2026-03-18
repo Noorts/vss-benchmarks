@@ -22,7 +22,8 @@ if __name__ == "__main__":
         "Performance128D4999K",
     ]
 
-    duckdb_threads = [14]
+    duckdb_threads = [14, 1]
+    duckdb_threads_during_index_creation = [14]
 
     K = 10
     MAX_SEARCH_QUERIES = 1000
@@ -43,6 +44,7 @@ if __name__ == "__main__":
     pdxearch_config = DuckDBPDXearchConfig(
         case_type=case_types,
         duckdb_threads=duckdb_threads,
+        duckdb_threads_during_index_creation=duckdb_threads_during_index_creation,
         seed=0,
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
@@ -57,6 +59,7 @@ if __name__ == "__main__":
     vss_config = DuckDBVSSConfig(
         case_type=case_types,
         duckdb_threads=duckdb_threads,
+        duckdb_threads_during_index_creation=duckdb_threads_during_index_creation,
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
@@ -64,7 +67,6 @@ if __name__ == "__main__":
         extension_path=get_vss_extension_path() if USE_CUSTOM_VSS_BUILD else None,
         runtime_ef_search=ef_search,
     )
-    # Note: VSS does not support the blob interface yet; leave use_blob_interface unset (None).
 
     flags = [
         "--skip-search-concurrent",
