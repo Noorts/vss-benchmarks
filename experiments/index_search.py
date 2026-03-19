@@ -36,7 +36,7 @@ if __name__ == "__main__":
         duckdb_threads=duckdb_threads,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
-        use_blob_interface=USE_BLOB_INTERFACE,
+        use_blob_interface=False,
     )
 
     n_probe = [1, 2, 3, 4, 5, 8, 16, 32, 64, 128, 256, 384, 512, 768, 0]

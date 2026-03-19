@@ -35,7 +35,7 @@ if __name__ == "__main__":
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
-        use_blob_interface=USE_BLOB_INTERFACE,
+        use_blob_interface=False,
         arxiv_dataset_order=ARXIV_DATASET_ORDER,
     )
 
