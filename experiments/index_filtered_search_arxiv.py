@@ -31,7 +31,6 @@ if __name__ == "__main__":
         case_type=case_types,
         arxiv_filter_type=arxiv_filter_types,
         duckdb_threads=duckdb_threads,
-        duckdb_threads_during_index_creation=duckdb_threads_during_index_creation,
         k=K,
         max_search_queries=MAX_SEARCH_QUERIES,
         force_load_index=FORCE_LOAD_INDEX,
