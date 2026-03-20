@@ -164,11 +164,19 @@ def load_train_data(dataset_dir: Path) -> pd.DataFrame:
     return train_df
 
 
-def load_test_data(dataset_dir: Path):
-    """Load test queries, range attributes, and ground truth for range-filtered search."""
+def load_test_data(dataset_dir: Path, filtered: bool):
+    """Load test queries, range attributes, and ground truth.
+
+    When *filtered* is True, loads range attributes and range-filtered neighbors.
+    When False, loads non-filtered neighbors and skips range attributes.
+    """
     test_df = pq.read_table(dataset_dir / "test.parquet").to_pandas()
-    test_attrs_df = pq.read_table(dataset_dir / "test_attrs_r.parquet").to_pandas()
-    neighbors_df = pq.read_table(dataset_dir / "neighbors_r.parquet").to_pandas()
+    if filtered:
+        test_attrs_df = pq.read_table(dataset_dir / "test_attrs_r.parquet").to_pandas()
+        neighbors_df = pq.read_table(dataset_dir / "neighbors_r.parquet").to_pandas()
+    else:
+        test_attrs_df = None
+        neighbors_df = pq.read_table(dataset_dir / "neighbors.parquet").to_pandas()
     return test_df, test_attrs_df, neighbors_df
 
 
@@ -198,7 +206,7 @@ def main():
     DATABASE_PATH = "benchmark_arxiv.db"
 
     # Row ordering variant: "original", "sorted_by_update_date", or "randomly_shuffled"
-    ARXIV_DATASET_ORDER = "sorted_by_update_date"
+    ARXIV_DATASET_ORDER = "original"
 
     BUILD_TYPE = "release"
     DEBUG = False
@@ -207,10 +215,12 @@ def main():
     QUERY_K = [10]
     SEED = 0
     QUANTIZATION = "f32"
-    USE_BLOB_INTERFACE = True
+    USE_BLOB_INTERFACE = False
     SLEEP_TO_ATTACH = False
 
-    SELECTIVITY_RANGE = [0.00, 0.05]  # Inclusive: [min_selectivity, max_selectivity]
+    FILTERED = False  # Toggle range-filtered vs non-filtered search
+    SELECTIVITY_RANGE = [0.00, 1]  # Inclusive: [min_selectivity, max_selectivity]
+    MAX_SEARCH_QUERIES = 1000  # Cap number of test queries (None = no limit)
 
     THREAD_COUNT_INDEX_CREATION = 14
 
@@ -224,7 +234,7 @@ def main():
     VSS_M0 = 2 * VSS_M
 
     PDXEARCH_ENABLED = APPROACH == Approach.PDXEARCH
-    PDXEARCH_N_PROBE = [28]
+    PDXEARCH_N_PROBE = [5]
 
     ############################################################################
 
@@ -240,20 +250,28 @@ def main():
     print(f"Process ID: {os.getpid()}")
     print(f"Dataset order: {ARXIV_DATASET_ORDER} ({DATASET_DIR})")
 
-    # Load selectivity data and determine eligible query indices
-    sel_data, eligible_indices = load_selectivity_data(*SELECTIVITY_RANGE)
-    queries_meta = sel_data["queries"]
-    print(
-        f"Eligible queries (selectivity in [{SELECTIVITY_RANGE[0]*100:.0f}%, {SELECTIVITY_RANGE[1]*100:.0f}%]): {len(eligible_indices)} / {sel_data['num_queries']}"
-    )
-
-    if len(eligible_indices) == 0:
-        print("No queries match the selectivity threshold. Exiting.")
-        return
-
     # Load test data
     print("Loading test data...")
-    test_df, test_attrs_df, neighbors_df = load_test_data(DATASET_DIR)
+    test_df, test_attrs_df, neighbors_df = load_test_data(DATASET_DIR, FILTERED)
+
+    # Load selectivity data and determine eligible query indices
+    if FILTERED:
+        sel_data, eligible_indices = load_selectivity_data(*SELECTIVITY_RANGE)
+        queries_meta = sel_data["queries"]
+        print(
+            f"Eligible queries (selectivity in [{SELECTIVITY_RANGE[0]*100:.0f}%, {SELECTIVITY_RANGE[1]*100:.0f}%]): {len(eligible_indices)} / {sel_data['num_queries']}"
+        )
+        if len(eligible_indices) == 0:
+            print("No queries match the selectivity threshold. Exiting.")
+            return
+    else:
+        eligible_indices = list(range(len(test_df)))
+        queries_meta = None
+        print(f"Non-filtered search: {len(eligible_indices)} queries")
+
+    if MAX_SEARCH_QUERIES is not None and len(eligible_indices) > MAX_SEARCH_QUERIES:
+        eligible_indices = eligible_indices[:MAX_SEARCH_QUERIES]
+        print(f"Capped to first {MAX_SEARCH_QUERIES} queries")
 
     print(f"Approach: {APPROACH}")
     if APPROACH == Approach.PDXEARCH:
@@ -357,9 +375,12 @@ def main():
             warmup_vec_literal = f"pdxearch_base64_to_blob('{warmup_blob}')"
         else:
             warmup_vec_literal = f"{[0] * DATASET_DIMS}::FLOAT[{DATASET_DIMS}]"
+        warmup_filter = (
+            "WHERE update_date >= 14000 AND update_date <= 15000 " if FILTERED else ""
+        )
         warmup_query = (
             f"SELECT id, rowid FROM {TABLE_NAME} "
-            f"WHERE update_date >= 14000 AND update_date <= 15000 "
+            f"{warmup_filter}"
             f"ORDER BY array_distance({TABLE_EMBEDDING_COLUMN_NAME}, {warmup_vec_literal}) "
             f"LIMIT {QUERY_K[0]};"
         )
@@ -395,8 +416,12 @@ def main():
                     query_vec = test_df.iloc[query_idx]["emb"]
 
                     # Get range filter attributes
-                    range_start = int(test_attrs_df.iloc[query_idx]["range_start"])
-                    range_end = int(test_attrs_df.iloc[query_idx]["range_end"])
+                    if FILTERED:
+                        range_start = int(test_attrs_df.iloc[query_idx]["range_start"])
+                        range_end = int(test_attrs_df.iloc[query_idx]["range_end"])
+                    else:
+                        range_start = None
+                        range_end = None
 
                     # Get ground truth
                     ground_truth_ids = neighbors_df.iloc[query_idx]["neighbors_id"]
@@ -404,11 +429,18 @@ def main():
                     if USE_BLOB_INTERFACE:
                         query_vec_literal = f"pdxearch_base64_to_blob('{encode_query_blob_base64(query_vec)}')"
                     else:
-                        query_vec_literal = f"{list(query_vec)}::FLOAT[{DATASET_DIMS}]"
+                        query_vec_literal = (
+                            f"{[float(v) for v in query_vec]}::FLOAT[{DATASET_DIMS}]"
+                        )
+
+                    if FILTERED:
+                        where_clause = f"WHERE update_date >= {range_start} AND update_date <= {range_end} "
+                    else:
+                        where_clause = ""
 
                     query = (
                         f"SELECT id, rowid FROM {TABLE_NAME} "
-                        f"WHERE update_date >= {range_start} AND update_date <= {range_end} "
+                        f"{where_clause}"
                         f"ORDER BY array_distance({TABLE_EMBEDDING_COLUMN_NAME}, {query_vec_literal}) "
                         f"LIMIT {current_query_k};"
                     )
@@ -442,7 +474,7 @@ def main():
                             )
                         index_scan_duration = index_scan_operator["operator_timing"]
 
-                    if APPROACH == Approach.PDXEARCH:
+                    if FILTERED and APPROACH == Approach.PDXEARCH:
                         sequential_scan_operator = get_scan_operator(
                             result_json, ["SEQ_SCAN"]
                         )
@@ -465,21 +497,37 @@ def main():
                             [
                                 "PDXEARCH_INDEX_SCAN",
                                 "PDXEARCH_INDEX_FILT_SCAN",
-                                "HNSW_INDEX_SCAN",
                             ],
                         ),
+                    )
+
+                    # Sum of all operator timings excluding the index scan
+                    # and sequential scan operators. This captures time spent
+                    # on projections and other operators above the scan nodes.
+                    other_operators_duration = sum_non_index_operator_timings(
+                        result_json,
+                        [
+                            "PDXEARCH_INDEX_SCAN",
+                            "PDXEARCH_INDEX_FILT_SCAN",
+                            "SEQ_SCAN",
+                        ],
                     )
 
                     results.append(
                         {
                             "query_idx": query_idx,
-                            "selectivity": queries_meta[query_idx]["selectivity"],
+                            "selectivity": (
+                                queries_meta[query_idx]["selectivity"]
+                                if queries_meta
+                                else None
+                            ),
                             "range_start": range_start,
                             "range_end": range_end,
                             "e2e_duration": end_time - start_time,
                             "index_scan_duration": index_scan_duration,
                             "filtered_sequential_scan_duration": filtered_sequential_scan_duration,
                             "calc_index_scan_duration": calc_index_scan_duration,
+                            "other_operators_duration": other_operators_duration,
                             "latency": result_json["latency"],
                             "cpu_time": result_json["cpu_time"],
                             "system_peak_buffer_memory": result_json[
@@ -509,9 +557,9 @@ def main():
                     "thread_count": THREAD_COUNT,
                     "query_k": current_query_k,
                     "approach": APPROACH.name,
-                    "filtered": True,
-                    "min_selectivity": SELECTIVITY_RANGE[0],
-                    "max_selectivity": SELECTIVITY_RANGE[1],
+                    "filtered": FILTERED,
+                    "min_selectivity": SELECTIVITY_RANGE[0] if FILTERED else None,
+                    "max_selectivity": SELECTIVITY_RANGE[1] if FILTERED else None,
                     "num_queries_run": len(results),
                     "runtime_parameter_name": (
                         "n_probe"
@@ -536,6 +584,9 @@ def main():
                     "avg_filtered_sequential_scan_duration": mean(
                         r["filtered_sequential_scan_duration"] for r in results
                     ),
+                    "avg_other_operators_duration": mean(
+                        r["other_operators_duration"] for r in results
+                    ),
                     "avg_cpu_time": mean(r["cpu_time"] for r in results),
                     "avg_latency": mean(r["latency"] for r in results),
                     "avg_e2e_duration": mean(r["e2e_duration"] for r in results),
@@ -543,7 +594,9 @@ def main():
                     "avg_system_peak_buffer_memory": mean(
                         r["system_peak_buffer_memory"] for r in results
                     ),
-                    "avg_selectivity": mean(r["selectivity"] for r in results),
+                    "avg_selectivity": (
+                        mean(r["selectivity"] for r in results) if FILTERED else None
+                    ),
                     "estimated_index_memory_bytes": estimated_index_memory_bytes,
                     "normalize": NORMALIZE,
                     "commit_hash": COMMIT_HASH,
@@ -565,6 +618,7 @@ def main():
                     "avg_index_scan_duration",
                     "avg_calc_index_scan_duration",
                     "avg_filtered_sequential_scan_duration",
+                    "avg_other_operators_duration",
                     "avg_cpu_time",
                     "avg_latency",
                     "avg_e2e_duration",
