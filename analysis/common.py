@@ -29,6 +29,76 @@ def apply_style() -> None:
     mpl.rcParams["font.sans-serif"] = ["Helvetica", "Arial", "DejaVu Sans"]
 
 
+_MIN_BOOTSTRAP_SAMPLES = 30
+
+
+def median_ci(
+    values: list[float], n_boot: int = 1_000, ci: float = 0.95, rng_seed: int = 42
+) -> tuple[float, float, float]:
+    """Return (median, lower_err, upper_err) using bootstrap percentile CI.
+
+    lower_err and upper_err are *distances* from the median (suitable for
+    matplotlib's ``yerr=[[lower_errs], [upper_errs]]``).
+    """
+    import numpy as np
+    import warnings
+
+    arr = np.asarray(values, dtype=float)
+    med = float(np.median(arr))
+    if len(arr) < 2:
+        return med, 0.0, 0.0
+    if len(arr) < _MIN_BOOTSTRAP_SAMPLES:
+        warnings.warn(
+            f"median_ci: bootstrapping {ci:.0%} CI with only {len(arr)} measurements "
+            f"(recommended >= {_MIN_BOOTSTRAP_SAMPLES})",
+            stacklevel=2,
+        )
+    rng = np.random.default_rng(rng_seed)
+    boot_medians = np.median(
+        rng.choice(arr, size=(n_boot, len(arr)), replace=True), axis=1
+    )
+    alpha = (1 - ci) / 2
+    lo, hi = float(np.quantile(boot_medians, alpha)), float(
+        np.quantile(boot_medians, 1 - alpha)
+    )
+    return med, med - lo, hi - med
+
+
+def qps_median_ci(
+    latencies: list[float], n_boot: int = 1_000, ci: float = 0.95, rng_seed: int = 42
+) -> tuple[float, float, float]:
+    """Return (median_qps, lower_err, upper_err) by bootstrapping QPS = 1/median(latency).
+
+    Resamples the per-query latency list, computes median latency per
+    resample, converts to QPS, then extracts the percentile CI.
+    lower_err and upper_err are distances from median_qps.
+    """
+    import numpy as np
+    import warnings
+
+    arr = np.asarray(latencies, dtype=float)
+    med_lat = float(np.median(arr))
+    med_qps = 1.0 / med_lat if med_lat > 0 else 0.0
+    if len(arr) < 2:
+        return med_qps, 0.0, 0.0
+    if len(arr) < _MIN_BOOTSTRAP_SAMPLES:
+        warnings.warn(
+            f"qps_median_ci: bootstrapping {ci:.0%} CI with only {len(arr)} measurements "
+            f"(recommended >= {_MIN_BOOTSTRAP_SAMPLES})",
+            stacklevel=2,
+        )
+    rng = np.random.default_rng(rng_seed)
+    boot_med_lats = np.median(
+        rng.choice(arr, size=(n_boot, len(arr)), replace=True), axis=1
+    )
+    boot_qps = 1.0 / boot_med_lats
+    alpha = (1 - ci) / 2
+    lo, hi = float(np.quantile(boot_qps, alpha)), float(
+        np.quantile(boot_qps, 1 - alpha)
+    )
+    return med_qps, med_qps - lo, hi - med_qps
+
+
 def save_fig(name: str, **kwargs) -> None:
     """Save the current figure as both PDF and PNG.
 
