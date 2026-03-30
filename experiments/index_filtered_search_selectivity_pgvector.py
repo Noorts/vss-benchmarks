@@ -39,6 +39,7 @@ if __name__ == "__main__":
     MAX_SEARCH_QUERIES = 1000
     FORCE_LOAD_INDEX = True
 
+    # We've used (1, 1) for the single threaded case. Not (0, 0).
     max_parallel_workers = 14
     max_parallel_maintenance_workers = 13  # plus leader
     maintenance_work_mem = "16GB"
