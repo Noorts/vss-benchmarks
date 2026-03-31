@@ -10,12 +10,19 @@ import matplotlib.pyplot as plt
 # ---------------------------------------------------------------------------
 PLOT_DPI = 300
 
-LABEL_FONTSIZE = 14
-TICK_FONTSIZE = 12
-X_TICK_FONTSIZE = 12
-BAR_LABEL_FONTSIZE = 10
-TITLE_FONTSIZE = 15
+# Old styling:
+# LABEL_FONTSIZE = 14
+# TICK_FONTSIZE = 12
+# X_TICK_FONTSIZE = 12
+# BAR_LABEL_FONTSIZE = 10
+# TITLE_FONTSIZE = 15
 MARKER_SIZE = 60
+
+LABEL_FONTSIZE = 18
+TICK_FONTSIZE = 15
+X_TICK_FONTSIZE = 15
+BAR_LABEL_FONTSIZE = 11
+TITLE_FONTSIZE = 18
 
 FONT_COLOR = "#333333"
 TICK_FONTS_COLOR = "#585858"
@@ -97,6 +104,7 @@ def qps_median_ci(
         np.quantile(boot_qps, 1 - alpha)
     )
     return med_qps, med_qps - lo, hi - med_qps
+    # return 1 / np.percentile(arr, 95), med_qps - lo, hi - med_qps
 
 
 def save_fig(name: str, **kwargs) -> None:
