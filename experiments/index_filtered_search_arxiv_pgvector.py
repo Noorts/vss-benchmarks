@@ -12,7 +12,7 @@ from utils import (
 
 if __name__ == "__main__":
     case_types = ["ArxivFilterPerformanceCase"]
-    arxiv_filter_types = ["EM", "R", "EMIS"]
+    filter_types = ["EM", "R", "EMIS"]
 
     K = 10
     MAX_SEARCH_QUERIES = 1000
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     # PgVector HNSW configuration
     hnsw_config = PgVectorHNSWConfig(
         case_type=case_types,
-        arxiv_filter_type=arxiv_filter_types,
+        filter_type=filter_types,
         max_parallel_workers=max_parallel_workers,
         max_parallel_maintenance_workers=max_parallel_maintenance_workers,
         maintenance_work_mem=maintenance_work_mem,
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # `lists` is resolved automatically from PGVECTOR_IVFFLAT_LISTS in utils.py
     ivfflat_config = PgVectorIVFFlatConfig(
         case_type=case_types,
-        arxiv_filter_type=arxiv_filter_types,
+        filter_type=filter_types,
         max_parallel_workers=max_parallel_workers,
         max_parallel_maintenance_workers=max_parallel_maintenance_workers,
         maintenance_work_mem=maintenance_work_mem,
@@ -77,7 +77,7 @@ if __name__ == "__main__":
             *cfg.to_cli_args(),
         ]
 
-        db_key = (cfg.cli_name, cfg.case_type, cfg.arxiv_filter_type)
+        db_key = (cfg.cli_name, cfg.case_type, cfg.filter_type)
 
         if previous_iteration_db == db_key:
             command.extend(["--skip-drop-old", "--skip-load"])

@@ -31,6 +31,8 @@ PGVECTOR_IVFFLAT_LISTS: dict[tuple[str, str | None], int] = {
     ("Performance768D1M", None): 1000,
     # -- ArxivFilterPerformanceCase --------------------------------------------
     ("ArxivFilterPerformanceCase", None): 1096,  # for 1200K embeddings
+    # -- CohereFilterPerformanceCase -------------------------------------------
+    ("CohereFilterPerformanceCase", None): 2454,  # for 6021120 embeddings
     # -- NewIntFilterPerformanceCase with dataset_with_size_type ----------------
     (
         "NewIntFilterPerformanceCase",
@@ -194,9 +196,9 @@ class BaseVectorDBBenchConfig:
     db_label: str = field(default="", init=False)
     dataset_with_size_type: str | None = None
     filter_rate: float | None = None
-    arxiv_filter_type: str | None = None
-    arxiv_dataset_order: str | None = (
-        None  # "original", "sorted_by_update_date", or "randomly_shuffled"
+    filter_type: str | None = None
+    dataset_order: str | None = (
+        None  # "original", "sorted_by_predicate", or "randomly_shuffled"
     )
 
     # Fields excluded from CLI argument generation.
