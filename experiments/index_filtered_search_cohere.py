@@ -16,7 +16,7 @@ if __name__ == "__main__":
     case_types = ["CohereFilterPerformanceCase"]
     filter_types = ["R"]
 
-    duckdb_threads = [1, 14]
+    duckdb_threads = [14]
     duckdb_threads_during_index_creation = [14]
 
     K = 10
@@ -53,7 +53,7 @@ if __name__ == "__main__":
         use_blob_interface=USE_BLOB_INTERFACE,
         dataset_order=COHERE_DATASET_ORDER,
         runtime_n_probe=n_probe,
-        quantization_type="f32",
+        quantization_type=["f32", "u8"],
     )
 
     ef_search = [4, 8, 16, 32, 64, 128, 256, 512, 1024]
@@ -77,7 +77,8 @@ if __name__ == "__main__":
     ]
 
     configurations = (
-        plain_config.expand() + pdxearch_config.expand() + vss_config.expand()
+        pdxearch_config.expand()
+        # plain_config.expand() + pdxearch_config.expand() + vss_config.expand()
     )
     print(json.dumps([asdict(c) for c in configurations], indent=2))
 
