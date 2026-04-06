@@ -21,6 +21,7 @@ if __name__ == "__main__":
         "Performance1536D500K",
         "Performance768D1M",
         "Performance128D4999K",
+        "Performance768D6M",
     ]
 
     duckdb_threads = [1, 14]
